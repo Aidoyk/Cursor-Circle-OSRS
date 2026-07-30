@@ -38,9 +38,4 @@ All options are available in the plugin's settings panel in RuneLite:
 ## Notes
 
 This plugin is purely visual — it only reads the cursor position and click timing to
-draw an overlay. It does not move the mouse, simulate input, or interact with the game
-<<<<<<< HEAD
-in any way beyond rendering.
-=======
-in any way beyond rendering.
->>>>>>> 4ec0d6d08496c444d626cd48e16e89445da09f17
+draw an overlay. It does not move the mouse, simulate input, or interact with the game in any way beyond rendering.
