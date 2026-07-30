@@ -45,10 +45,22 @@ public interface CursorClarityConfig extends Config
 	}
 
 	@ConfigItem(
+		keyName = "opacity",
+		name = "Opacity (%)",
+		description = "Transparency of the ring, from 1% (nearly invisible) to 100% (fully solid)",
+		position = 4
+	)
+	@Range(min = 1, max = 100)
+	default int opacity()
+	{
+		return 100;
+	}
+
+	@ConfigItem(
 		keyName = "pulse",
 		name = "Pulse animation",
 		description = "Slowly grow/shrink the ring so it's easier to spot out of the corner of your eye",
-		position = 4
+		position = 5
 	)
 	default boolean pulse()
 	{
@@ -59,7 +71,7 @@ public interface CursorClarityConfig extends Config
 		keyName = "onlyInCombat",
 		name = "Only show in combat",
 		description = "Only draw the ring while your character is in combat (has a combat interaction)",
-		position = 5
+		position = 6
 	)
 	default boolean onlyInCombat()
 	{
@@ -70,10 +82,33 @@ public interface CursorClarityConfig extends Config
 		keyName = "hideWhenIdle",
 		name = "Hide when mouse is idle",
 		description = "Fade the ring out after the mouse stops moving for a bit",
-		position = 6
+		position = 7
 	)
 	default boolean hideWhenIdle()
 	{
 		return false;
+	}
+
+	@ConfigItem(
+		keyName = "clickAnimation",
+		name = "Click animation",
+		description = "Ring briefly collapses toward the cursor then springs back out when you click",
+		position = 8
+	)
+	default boolean clickAnimation()
+	{
+		return true;
+	}
+
+	@ConfigItem(
+		keyName = "clickAnimationDuration",
+		name = "Click animation duration (ms)",
+		description = "How long the collapse-and-spring-back animation takes",
+		position = 9
+	)
+	@Range(min = 100, max = 800)
+	default int clickAnimationDuration()
+	{
+		return 250;
 	}
 }

@@ -1,0 +1,13 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Launch CursorClarityTest",
+            "request": "launch",
+            "mainClass": "com.cursorclarity.CursorClarityTest",
+            "projectName": "example-Cursor-Circle-OSRS",
+            "vmArgs": "-ea"
+        }
+    ]
+}

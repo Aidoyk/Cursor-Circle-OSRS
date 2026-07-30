@@ -5,6 +5,7 @@ import javax.inject.Inject;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ConfigChanged;
+import net.runelite.client.input.MouseManager;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.ui.overlay.OverlayManager;
@@ -22,6 +23,12 @@ public class CursorClarityPlugin extends Plugin
 	@Inject
 	private CursorClarityOverlay overlay;
 
+	@Inject
+	private MouseManager mouseManager;
+
+	@Inject
+	private CursorClarityMouseListener mouseListener;
+
 	@Provides
 	CursorClarityConfig provideConfig(ConfigManager configManager)
 	{
@@ -32,12 +39,14 @@ public class CursorClarityPlugin extends Plugin
 	protected void startUp()
 	{
 		overlayManager.add(overlay);
+		mouseManager.registerMouseListener(mouseListener);
 	}
 
 	@Override
 	protected void shutDown()
 	{
 		overlayManager.remove(overlay);
+		mouseManager.unregisterMouseListener(mouseListener);
 	}
 
 	@Subscribe

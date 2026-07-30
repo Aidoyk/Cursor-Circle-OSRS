@@ -21,15 +21,17 @@ class CursorClarityOverlay extends Overlay
 
 	private final Client client;
 	private final CursorClarityConfig config;
+	private final CursorClickState clickState;
 
 	private Point lastMousePos = null;
 	private long lastMoveTime = System.currentTimeMillis();
 
 	@Inject
-	private CursorClarityOverlay(Client client, CursorClarityConfig config)
+	private CursorClarityOverlay(Client client, CursorClarityConfig config, CursorClickState clickState)
 	{
 		this.client = client;
 		this.config = config;
+		this.clickState = clickState;
 		setPosition(OverlayPosition.DYNAMIC);
 		setLayer(OverlayLayer.ALWAYS_ON_TOP);
 	}
@@ -60,14 +62,15 @@ class CursorClarityOverlay extends Overlay
 			lastMoveTime = now;
 		}
 
-		float alpha = 1f;
+		float alpha = config.opacity() / 100f;
 		if (config.hideWhenIdle())
 		{
 			long idleFor = now - lastMoveTime;
 			if (idleFor > IDLE_GRACE_MS)
 			{
 				long fadeProgress = idleFor - IDLE_GRACE_MS;
-				alpha = 1f - Math.min(1f, fadeProgress / (float) IDLE_FADE_MS);
+				float idleFade = 1f - Math.min(1f, fadeProgress / (float) IDLE_FADE_MS);
+				alpha *= idleFade;
 				if (alpha <= 0f)
 				{
 					return null;
@@ -82,6 +85,22 @@ class CursorClarityOverlay extends Overlay
 			// Smooth sine pulse, +/- 15% of base radius, ~1.5s period
 			double phase = (now % 1500) / 1500.0 * 2 * Math.PI;
 			radius = (int) (baseRadius + Math.sin(phase) * baseRadius * 0.15);
+		}
+
+		if (config.clickAnimation() && clickState.getLastClickTime() > 0)
+		{
+			long sinceClick = now - clickState.getLastClickTime();
+			int duration = config.clickAnimationDuration();
+			if (sinceClick >= 0 && sinceClick < duration)
+			{
+				float t = sinceClick / (float) duration;
+				radius = (int) (radius * easeOutBack(t));
+			}
+		}
+
+		if (radius < 1)
+		{
+			radius = 1;
 		}
 
 		Color base = config.ringColor();
@@ -105,5 +124,18 @@ class CursorClarityOverlay extends Overlay
 		graphics.draw(ring);
 
 		return null;
+	}
+
+	/**
+	 * Starts at 0 (ring collapsed to the cursor point) and eases up past 1 with a
+	 * slight overshoot before settling exactly at 1 (normal radius) — gives the ring
+	 * a springy "pop back out" feel instead of a flat linear grow.
+	 */
+	private static float easeOutBack(float t)
+	{
+		float c1 = 1.70158f;
+		float c3 = c1 + 1f;
+		float x = t - 1f;
+		return 1f + c3 * x * x * x + c1 * x * x;
 	}
 }
